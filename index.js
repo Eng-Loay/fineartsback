@@ -1,25 +1,26 @@
-// ✅ STEP 1: Load environment variables BEFORE anything else
 const dotenv = require("dotenv");
 dotenv.config();
 
-// ✅ STEP 2: Import modules
 const express = require("express");
-const cors = require("cors"); // 👈 Add this
+const cors = require("cors");
 const connectDB = require("./config/db");
 const imageRoutes = require("./routes/imageRoutes");
 
-// ✅ STEP 3: Connect to MongoDB
 connectDB();
 
-// ✅ STEP 4: Initialize express app
 const app = express();
 
-// ✅ STEP 5: Allow CORS from frontend port
-app.use(cors({ origin: "http://localhost:5173" }));
+// ✅ Enable CORS for your frontend
+app.use(cors({ origin: "*" })); // Use "*" if you're deploying frontend elsewhere
 
 app.use(express.json());
 
-// ✅ STEP 6: Use routes
+// ✅ Add root route for Railway to know app is live
+app.get("/", (req, res) => {
+  res.send("API is running");
+});
+
+// ✅ Mount your /api routes
 app.use("/api", imageRoutes);
 
 // ✅ Global error handler
@@ -31,6 +32,5 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ✅ STEP 7: Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
